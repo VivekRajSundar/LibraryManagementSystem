@@ -1,12 +1,15 @@
-﻿namespace LibraryManagementSystem
+﻿using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
+
+namespace LibraryManagementSystem
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            BookService _bookService = new BookService();
             Console.WriteLine($"Welcome to Library Management System!");
             bool canContinue = true;
-            Library library = new Library();
             do
             {
                 Console.WriteLine($"Choose your options: \n1. Add a new Book\n2. List All Books\n3. Exit");
@@ -24,12 +27,12 @@
                         Console.WriteLine("Enter the number of copies that you are adding: ");
                         int.TryParse(Console.ReadLine(), out int copies);
 
-                        library.AddBooks(new Book(isbn, bookName, authorName, copies));
+                        _bookService.AddBook(new Book(isbn, bookName, authorName, copies));
 
                     }
                     else if (option == 2)
                     {
-                        library.ListBooks();
+                        _bookService.ListBooks();
                     }
                     else if (option == 3)
                     {
@@ -39,7 +42,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine(ex.Message.ToString());
                 }
             } while (canContinue);
         }
