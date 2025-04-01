@@ -4,13 +4,12 @@ namespace LibraryManagementSystem.Data
 {
     public class DbHelper
     {
-        private static string absolutePath = "C:\\Users\\vivek\\source\\repos\\LibraryManagementSystem\\LibraryManagementSystem\\library.db";
-        private static string connectionString = $"Data Source ={absolutePath};version=3;";
+        private static string _connectionString;        
+        public static SQLiteConnection GetConnection() => new SQLiteConnection(_connectionString);        
 
-        public static SQLiteConnection GetConnection() => new SQLiteConnection(connectionString);        
-
-        public static void InitializeDB()
+        public static void InitializeDB(string connectionString)
         {
+            _connectionString = connectionString;
             using var connection = GetConnection();
             connection.Open();
 
@@ -23,6 +22,17 @@ namespace LibraryManagementSystem.Data
                                 Email TEXT NOT NULL UNIQUE,
                                 Password TEXT NOT NULL,
                                 Salt TEXT  NOT NULL)
+                                ";
+            cmd.ExecuteNonQuery();
+
+            //Create Books table if not exists
+            cmd.CommandText = @"
+                                CREATE TABLE IF NOT EXISTS Books(
+                                Id Integer Primary Key AutoIncrement,
+                                ISBN Integer Not Null,
+                                Name Text Not Null,
+                                Author Text Not Null,
+                                CopiesAvailable Integer)
                                 ";
             cmd.ExecuteNonQuery();
         }

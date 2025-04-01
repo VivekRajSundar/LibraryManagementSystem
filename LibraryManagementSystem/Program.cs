@@ -1,5 +1,6 @@
 ﻿using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace LibraryManagementSystem
 {
@@ -7,9 +8,17 @@ namespace LibraryManagementSystem
     {
         static void Main(string[] args)
         {
+            // Load configuration from appsettings.json
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory()) // Set base path
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) // Load JSON file
+                .Build();
+
+            string connectionString = config.GetConnectionString("LibraryDb");
+            DbHelper.InitializeDB(connectionString);
             bool isAuthenticated = false, canContinue = true;
             UserService _userService = new UserService();
-            DbHelper.InitializeDB();
+            
             do
             {
                 Console.WriteLine("Hi There, Before Entering into Library Please Verify yourself\n1.Register\n2.Login\n3.Exit");
