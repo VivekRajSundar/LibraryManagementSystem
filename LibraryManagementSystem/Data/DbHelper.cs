@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SQLite;
 
 namespace LibraryManagementSystem.Data
 {
@@ -13,5 +8,23 @@ namespace LibraryManagementSystem.Data
         private static string connectionString = $"Data Source ={absolutePath};version=3;";
 
         public static SQLiteConnection GetConnection() => new SQLiteConnection(connectionString);        
+
+        public static void InitializeDB()
+        {
+            using var connection = GetConnection();
+            connection.Open();
+
+            //Create Users table if not exists
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                                CREATE TABLE IF NOT EXISTS Users(
+                                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Name TEXT NOT NULL,
+                                Email TEXT NOT NULL UNIQUE,
+                                Password TEXT NOT NULL,
+                                Salt TEXT  NOT NULL)
+                                ";
+            cmd.ExecuteNonQuery();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using LibraryManagementSystem.Models;
+﻿using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Services;
 
 namespace LibraryManagementSystem
@@ -6,6 +6,57 @@ namespace LibraryManagementSystem
     internal class Program
     {
         static void Main(string[] args)
+        {
+            bool isAuthenticated = false, canContinue = true;
+            UserService _userService = new UserService();
+            DbHelper.InitializeDB();
+            do
+            {
+                Console.WriteLine("Hi There, Before Entering into Library Please Verify yourself\n1.Register\n2.Login\n3.Exit");
+                Console.Write("Enter your choice: ");
+                int.TryParse(Console.ReadLine(), out int choice);
+                string email = string.Empty, name = string.Empty;
+                string password = string.Empty, confirmPassword = string.Empty;
+                switch (choice)
+                {
+                    case 1:
+                        Console.Write("Enter your Name: ");
+                        name = Console.ReadLine();
+                        Console.Write("Enter your Email: ");
+                        email = Console.ReadLine();
+                        Console.Write("Enter your password: ");
+                        password = Console.ReadLine();
+                        Console.Write("Confirm your password: ");
+                        confirmPassword = Console.ReadLine();
+                        bool isUserAdded = _userService.AddUser(name, email, password, confirmPassword);
+                        if (isUserAdded) Console.WriteLine("User registered successfully.");
+                        else Console.WriteLine("Something went wrong, user not added"); //later change this to show exact error message.
+                        break;
+                    case 2:
+                        Console.Write("Enter you email: ");
+                        email = Console.ReadLine();
+                        Console.Write("Enter your password: ");
+                        password= Console.ReadLine();
+                        isAuthenticated = _userService.VerifyUser(email, password);
+                        canContinue = !isAuthenticated;
+                        if (!isAuthenticated) Console.WriteLine("Authentication not successful.");
+                        break;
+                    case 3:
+                        Console.WriteLine("See you next time!"); 
+                        canContinue = false; break;
+                    default:
+                        Console.WriteLine("The choice is not valid"); break;
+                }
+            } while (canContinue);
+
+            if (isAuthenticated)
+            {
+                // Access Library
+                LibraryMenu();
+            }
+        }
+
+        static void LibraryMenu()
         {
             BookService _bookService = new BookService();
             Console.WriteLine($"Welcome to Library Management System!");
@@ -19,15 +70,15 @@ namespace LibraryManagementSystem
                     if (option == 1)
                     {
                         Console.WriteLine("Enter the ISBN: ");
-                        int.TryParse(Console.ReadLine(), out int isbn);
+                        _ = int.TryParse(Console.ReadLine(), out int isbn);
                         Console.WriteLine("Enter the Name of the Book: ");
                         string bookName = Console.ReadLine();
                         Console.WriteLine("Enter the Author Name: ");
                         string authorName = Console.ReadLine();
                         Console.WriteLine("Enter the number of copies that you are adding: ");
-                        int.TryParse(Console.ReadLine(), out int copies);
+                        _ = int.TryParse(Console.ReadLine(), out int copies);
 
-                        _bookService.AddBook(new Book(isbn, bookName, authorName, copies));
+                        _bookService.AddBook(isbn, bookName, authorName, copies);
 
                     }
                     else if (option == 2)
@@ -43,6 +94,7 @@ namespace LibraryManagementSystem
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message.ToString());
+                    canContinue = false;
                 }
             } while (canContinue);
         }
