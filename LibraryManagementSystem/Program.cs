@@ -1,11 +1,13 @@
 ﻿using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Services;
 using Microsoft.Extensions.Configuration;
+using System.Xml.Linq;
 
 namespace LibraryManagementSystem
 {
     internal class Program
     {
+        private static UserService _userService  = new UserService();
         static void Main(string[] args)
         {
             // Load configuration from appsettings.json
@@ -17,41 +19,23 @@ namespace LibraryManagementSystem
             string connectionString = config.GetConnectionString("LibraryDb");
             DbHelper.InitializeDB(connectionString);
             bool isAuthenticated = false, canContinue = true;
-            UserService _userService = new UserService();
             
             do
             {
                 Console.WriteLine("Hi There, Before Entering into Library Please Verify yourself\n1.Register\n2.Login\n3.Exit");
                 Console.Write("Enter your choice: ");
                 int.TryParse(Console.ReadLine(), out int choice);
-                string email = string.Empty, name = string.Empty;
-                string password = string.Empty, confirmPassword = string.Empty;
                 switch (choice)
                 {
                     case 1:
-                        Console.Write("Enter your Name: ");
-                        name = Console.ReadLine();
-                        Console.Write("Enter your Email: ");
-                        email = Console.ReadLine();
-                        Console.Write("Enter your password: ");
-                        password = Console.ReadLine();
-                        Console.Write("Confirm your password: ");
-                        confirmPassword = Console.ReadLine();
-                        bool isUserAdded = _userService.AddUser(name, email, password, confirmPassword);
-                        if (isUserAdded) Console.WriteLine("User registered successfully.");
-                        else Console.WriteLine("Something went wrong, user not added"); //later change this to show exact error message.
+                        Register();
                         break;
                     case 2:
-                        Console.Write("Enter you email: ");
-                        email = Console.ReadLine();
-                        Console.Write("Enter your password: ");
-                        password= Console.ReadLine();
-                        isAuthenticated = _userService.VerifyUser(email, password);
-                        canContinue = !isAuthenticated;
-                        if (!isAuthenticated) Console.WriteLine("Authentication not successful.");
+                        if (Login()) { ViewLibrary(); }
+                        else Console.WriteLine("Authentication not successful.");
                         break;
                     case 3:
-                        Console.WriteLine("See you next time!"); 
+                        Console.WriteLine("Exiting from the LibraryManagement App");
                         canContinue = false; break;
                     default:
                         Console.WriteLine("The choice is not valid"); break;
@@ -61,18 +45,44 @@ namespace LibraryManagementSystem
             if (isAuthenticated)
             {
                 // Access Library
-                LibraryMenu();
+                ViewLibrary();
             }
         }
 
-        static void LibraryMenu()
+        static void Register()
+        {
+            Console.Write("Enter your Name: ");
+            string name = Console.ReadLine();
+            Console.Write("Enter your Email: ");
+            string email = Console.ReadLine();
+            Console.Write("Enter your password: ");
+            string password = Console.ReadLine();
+            Console.Write("Confirm your password: ");
+            string confirmPassword = Console.ReadLine();
+            bool isUserAdded = _userService.Register(name, email, password, confirmPassword);
+            if (isUserAdded) Console.WriteLine("User registered successfully.");
+            else Console.WriteLine("Something went wrong, user not added"); //later change this to show exact error message.
+        }
+
+        static bool Login()
+        {
+            Console.Write("Enter you email: ");
+            string email = Console.ReadLine();
+            Console.Write("Enter your password: ");
+            string password = Console.ReadLine();
+            return _userService.Login(email, password);            
+        }
+
+        static void Logout() => _userService.Logout();
+
+        static void ViewLibrary()
         {
             BookService _bookService = new BookService();
-            Console.WriteLine($"Welcome to Library Management System!");
+            Console.WriteLine($"Hi {SessionManager.CurrentUser.Name}, Welcome to Library Management System!");
             bool canContinue = true;
             do
             {
-                Console.WriteLine($"Choose your options: \n1. Add a new Book\n2. List All Books\n3. Exit");
+                Console.WriteLine($"Choose your options: \n1. Add a new Book\n2. List All Books\n3. Logout");
                 try
                 {
                     int.TryParse(Console.ReadLine(), out int option);
@@ -97,7 +107,8 @@ namespace LibraryManagementSystem
                     else if (option == 3)
                     {
                         canContinue = false;
-                        Console.WriteLine("Bye bye");
+                        Console.WriteLine($"See you next time, {SessionManager.CurrentUser.Name}!");
+                        Logout();
                     }
                 }
                 catch (Exception ex)

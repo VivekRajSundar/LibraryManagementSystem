@@ -13,7 +13,7 @@ namespace LibraryManagementSystem.Services
         {
             _userRepository = new UserRepository();
         }
-        public bool AddUser(string name, string email, string password, string confirmPassword)
+        public bool Register(string name, string email, string password, string confirmPassword)
         {
             //check if no fields are empty
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword)) return false;
@@ -37,7 +37,7 @@ namespace LibraryManagementSystem.Services
             return _userRepository.AddUser(new User(name, email.ToLower(), hashedPassword, salt));
         }
 
-        public bool VerifyUser(string email, string password)
+        public bool Login(string email, string password)
         {
             // check if email and password is valid or not
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password)) return false;
@@ -52,8 +52,12 @@ namespace LibraryManagementSystem.Services
             //Verify the password
             string hashedPassword = HashPassword(password, user.Salt);
 
+            if (user.Password == hashedPassword) SessionManager.CurrentUser = user;
+
             return user.Password == hashedPassword;
         }
+
+        public void Logout() => SessionManager.CurrentUser = null;
 
         private static bool IsValidEmail(string email)
         {
