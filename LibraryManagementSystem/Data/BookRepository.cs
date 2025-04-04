@@ -40,5 +40,22 @@ namespace LibraryManagementSystem.Data
 
             return books;
         }
+
+        public Book? GetBook(int isbn)
+        {
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            string query = "Select * from Books where isbn = @isbn";
+            using var command = new SQLiteCommand (query, connection);
+            command.Parameters.AddWithValue("@isbn", isbn);
+            using var reader = command.ExecuteReader();
+            Book? book = null;
+            while (reader.Read()) book = new Book(reader.GetInt32(1),
+                  reader.GetString(2),
+                  reader.GetString(3),
+                  reader.GetInt32(4)
+                );
+            return book;
+        }
     }
 }

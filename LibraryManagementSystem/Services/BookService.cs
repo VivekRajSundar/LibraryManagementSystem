@@ -15,14 +15,20 @@ namespace LibraryManagementSystem.Services
         public BookService() {
             _bookRepository = new BookRepository();
         }
-        public void AddBook(int isbn, string bookName, string author, int copies)
+        public bool AddBook(int isbn, string bookName, string author, int copies)
         {
+            //check if all the field is not null or empty
+            if (string.IsNullOrEmpty(bookName) || string.IsNullOrEmpty(author) || copies < 1) return false;
+
+            if(_bookRepository.GetBook(isbn) is not null) return false;
+
             _bookRepository.AddBook(new Book(isbn, bookName, author, copies));
+            return true;
         }
         public List<Book> GetAllBooks()
         {
             return _bookRepository.GetAllBooks();
-        }
+        }        
 
         public void ListBooks()
         {

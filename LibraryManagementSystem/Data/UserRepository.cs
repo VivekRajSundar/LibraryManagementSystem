@@ -35,7 +35,7 @@ namespace LibraryManagementSystem.Data
             using var command = new SQLiteCommand(query, connection);
             command.Parameters.AddWithValue("@Email", email);
             using var reader = command.ExecuteReader();
-            while (reader.Read()) user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4));
+            while (reader.Read()) user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetString(5));
             return user;
         }
     }
