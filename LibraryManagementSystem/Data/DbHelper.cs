@@ -21,7 +21,8 @@ namespace LibraryManagementSystem.Data
                                 Name TEXT NOT NULL,
                                 Email TEXT NOT NULL UNIQUE,
                                 Password TEXT NOT NULL,
-                                Salt TEXT  NOT NULL)
+                                Salt TEXT  NOT NULL,
+                                Role TEXT DEFAULT ""Member"" NOT NULL)
                                 ";
             cmd.ExecuteNonQuery();
 
@@ -29,7 +30,7 @@ namespace LibraryManagementSystem.Data
             cmd.CommandText = @"
                                 CREATE TABLE IF NOT EXISTS Books(
                                 Id Integer Primary Key AutoIncrement,
-                                ISBN Integer Not Null,
+                                ISBN Integer Not Null UNIQUE,
                                 Name Text Not Null,
                                 Author Text Not Null,
                                 CopiesAvailable Integer)
