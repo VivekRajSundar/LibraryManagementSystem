@@ -59,6 +59,11 @@ namespace LibraryManagementSystem.Services
 
         public void Logout() => SessionManager.CurrentUser = null;
 
+        public bool IsUserBorrowedBooks(string email)
+        {
+            return _userRepository.IsUserBorrowedBook(email);
+        }
+
         private static bool IsValidEmail(string email)
         {
             string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";

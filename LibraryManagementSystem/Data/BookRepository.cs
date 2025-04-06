@@ -18,6 +18,33 @@ namespace LibraryManagementSystem.Data
             command.ExecuteNonQuery();
         }
 
+        /// <summary>        
+        /// One User can borrow one book only at a time.
+        /// </summary>
+        /// <param name="isbn"></param>
+        /// <param name="email"></param>
+        public void BorrowBook(int isbn, string email)
+        {
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            //update BorrowedBooks table with the email and isbn.
+            string query = "INSERT INTO BorrowedBooks(User_Email, Books_Isbn) VALUES(@Email, @Isbn);";
+            using (var command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Email", email);
+                command.Parameters.AddWithValue("@Isbn", isbn);
+                command.ExecuteNonQuery();
+            }
+
+            //Decrease the copies count from the Books table.
+            query = "UPDATE Books SET CopiesAvailable = CopiesAvailable - 1 WHERE ISBN = @isbn;";
+            using (var command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@isbn", isbn);
+                command.ExecuteNonQuery();
+            }
+        }
+
         public List<Book> GetAllBooks()
         {
             List<Book> books = new List<Book>();

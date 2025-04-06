@@ -36,6 +36,21 @@ namespace LibraryManagementSystem.Data
                                 CopiesAvailable Integer)
                                 ";
             cmd.ExecuteNonQuery();
+
+            //Set foreign keys on
+            cmd.CommandText = @"PRAGMA foreign_keys = ON";
+            cmd.ExecuteNonQuery();
+
+            //Create Borrow Table
+            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS BorrowedBooks(
+                                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                User_Email TEXT,
+                                Books_Isbn Integer,
+                                ReturnedDate TEXT,
+                                FOREIGN KEY (User_Email) REFERENCES Users (Email) ON DELETE CASCADE,
+                                FOREIGN KEY (Books_Isbn) REFERENCES Books (ISBN) ON DELETE CASCADE)
+                                ";
+            cmd.ExecuteNonQuery();
         }
     }
 }
