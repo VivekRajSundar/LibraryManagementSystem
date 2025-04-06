@@ -38,5 +38,16 @@ namespace LibraryManagementSystem.Data
             while (reader.Read()) user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetString(5));
             return user;
         }
+
+        public bool IsUserBorrowedBook(string email)
+        {
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            string query = "select count(User_email) from BorrowedBooks where User_email = @email";
+            using var command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@email", email);
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;
+        }
     }
 }
