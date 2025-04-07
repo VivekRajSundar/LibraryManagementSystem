@@ -38,6 +38,17 @@ namespace LibraryManagementSystem.Services
             _bookRepository.BorrowBook(isbn, SessionManager.CurrentUser.Email);
             return true;
         }
+        public bool ReturnBook(int isbn)
+        {
+            //Check for invalid parameters
+            if (isbn < 0 || SessionManager.CurrentUser is null) return false;
+
+            Book? book = _bookRepository.GetBook(isbn);
+            if (book is null) return false;
+
+            _bookRepository.ReturnBook(isbn, SessionManager.CurrentUser.Email);
+            return true;
+        }
         public List<Book> GetAllBooks()
         {
             return _bookRepository.GetAllBooks();
