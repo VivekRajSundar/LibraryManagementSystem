@@ -28,16 +28,38 @@ namespace LibraryManagementSystem.Data
             using var connection = DbHelper.GetConnection();
             connection.Open();
             //update BorrowedBooks table with the email and isbn.
-            string query = "INSERT INTO BorrowedBooks(User_Email, Books_Isbn) VALUES(@Email, @Isbn);";
+            string query = "INSERT INTO BorrowedBooks(User_Email, Books_Isbn, ReturnedDate) VALUES(@Email, @Isbn, @ReturnedDate);";
             using (var command = new SQLiteCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Email", email);
                 command.Parameters.AddWithValue("@Isbn", isbn);
+                command.Parameters.AddWithValue("@ReturnedDate", DBNull.Value);
                 command.ExecuteNonQuery();
             }
 
             //Decrease the copies count from the Books table.
             query = "UPDATE Books SET CopiesAvailable = CopiesAvailable - 1 WHERE ISBN = @isbn;";
+            using (var command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@isbn", isbn);
+                command.ExecuteNonQuery();
+            }
+        }
+        public void ReturnBook(int isbn, string email)
+        {
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            //update BorrowedBooks with current date value for the respective Id
+            string query = "UPDATE BorrowedBooks SET ReturnedDate = datetime('now') WHERE Books_isbn = @isbn and User_Email = @email;";
+            using (var command = new SQLiteCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@isbn", isbn);
+                command.Parameters.AddWithValue("@email", email);
+                command.ExecuteNonQuery();
+            }
+
+            //Increase the count of books table where the isbn is present
+            query = "UPDATE Books SET CopiesAvailable = CopiesAvailable + 1 WHERE isbn = @isbn;";
             using (var command = new SQLiteCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@isbn", isbn);

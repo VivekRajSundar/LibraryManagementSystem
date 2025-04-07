@@ -43,7 +43,7 @@ namespace LibraryManagementSystem.Data
         {
             using var connection = DbHelper.GetConnection();
             connection.Open();
-            string query = "select count(User_email) from BorrowedBooks where User_email = @email";
+            string query = "select count(*) from BorrowedBooks where User_email=@email and ReturnedDate is null";
             using var command = new SQLiteCommand(query, connection);
             command.Parameters.AddWithValue("@email", email);
             int count = Convert.ToInt32(command.ExecuteScalar());

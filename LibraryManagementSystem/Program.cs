@@ -86,12 +86,11 @@ namespace LibraryManagementSystem
                             break;
                         case (int)MemberActivity.BorrowBook:
                             //Borrow Book
-                            Console.WriteLine("Borrow Book");
                             BorrowBook();
                             break;
                         case (int)MemberActivity.ReturnBook:
                             //Return Book
-                            Console.WriteLine("Return Book");
+                            ReturnBook();
                             break;
                         case (int)MemberActivity.Logout:
                             Console.WriteLine($"See you next time, {SessionManager.CurrentUser.Name}!");
@@ -147,16 +146,28 @@ namespace LibraryManagementSystem
             else Console.WriteLine("There is some issue in adding the books"); //later change this code to show exact error.
         }
         static void BorrowBook()
-        {
-            Console.Write("Enter the ISBN number of the Book: ");
-            _ = int.TryParse(Console.ReadLine(), out int isbn);
-
+        {            
             //Check if the user currently borrowed a book or not
             if (_userService.IsUserBorrowedBooks(SessionManager.CurrentUser.Email)) { Console.WriteLine("You already borrowed a book."); return; }
 
+            Console.Write("Enter the ISBN number of the Book: ");
+            _ = int.TryParse(Console.ReadLine(), out int isbn);
+
             bool isBookBorrowed = _bookService.BorrowBook(isbn);
-            if (isBookBorrowed) Console.WriteLine("Book borrowed successfully.");
+            if (isBookBorrowed) Console.WriteLine("You borrowed the Book successfully.");
             else Console.WriteLine("Something went wrong. Book is not borrowed.");
+        }
+        static void ReturnBook()
+        {
+            //check if the user borrowed any books
+            if (!_userService.IsUserBorrowedBooks(SessionManager.CurrentUser.Email)) { Console.WriteLine("You don't borrowed any books that you can return"); return; }
+
+            Console.Write("Enter the ISBN number of the Book that you want to return: ");
+            _ = int.TryParse(Console.ReadLine(), out int isbn);
+
+            bool isBookReturned = _bookService.ReturnBook(isbn);
+            if (isBookReturned) Console.WriteLine("You returned the book sucessfully.");
+            else Console.WriteLine("Book Return was unsuccessful. Kindly try again.");
         }
         static void Logout() => _userService.Logout();
     }
