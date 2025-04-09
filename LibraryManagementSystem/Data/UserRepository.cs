@@ -1,7 +1,6 @@
 ﻿using LibraryManagementSystem.Models;
 using System.Data.SQLite;
 
-
 namespace LibraryManagementSystem.Data
 {
     public class UserRepository
@@ -37,6 +36,28 @@ namespace LibraryManagementSystem.Data
             using var reader = command.ExecuteReader();
             while (reader.Read()) user = new User(reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetString(4), reader.GetString(5));
             return user;
+        }
+
+        public List<User> GetAllUsers()
+        {
+            List<User> users = new List<User>();
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            string query = "Select * from Users";
+            using var command = new SQLiteCommand(query, connection);
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                users.Add(new User
+                (reader.GetString(1),
+                  reader.GetString(2),
+                  string.Empty,
+                  string.Empty,
+                  reader.GetString(5)
+                ));
+            }
+            return users;
         }
 
         public bool IsUserBorrowedBook(string email)

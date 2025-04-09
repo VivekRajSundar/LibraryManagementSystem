@@ -13,12 +13,16 @@
             Role = role;
         }
 
-        public User(string name, string email, string password, string salt)
+        public User(string name, string email, string password, string salt) : this(name, email)
+        {            
+            Password = password;
+            Salt = salt;
+        }
+
+        public User(string name, string email)
         {
             Name = name;
             Email = email;
-            Password = password;
-            Salt = salt;
         }
     }
 }

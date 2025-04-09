@@ -1,5 +1,6 @@
 ﻿using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Enums;
+using LibraryManagementSystem.Helpers;
 using LibraryManagementSystem.Services;
 using Microsoft.Extensions.Configuration;
 using System.Xml.Linq;
@@ -78,18 +79,15 @@ namespace LibraryManagementSystem
                             AddBook();
                             break;
                         case (int)AdminActivity.ViewAllUsers:
-                            //View all Users
-                            Console.WriteLine("Viewing All Users");
+                            OutputHelper.ListUsers(_userService.GetAllUsers());
                             break;
                         case (int)MemberActivity.ViewBooks:
-                            _bookService.ListBooks();
+                            OutputHelper.ListBooks(_bookService.GetAllBooks());
                             break;
                         case (int)MemberActivity.BorrowBook:
-                            //Borrow Book
                             BorrowBook();
                             break;
                         case (int)MemberActivity.ReturnBook:
-                            //Return Book
                             ReturnBook();
                             break;
                         case (int)MemberActivity.Logout:
@@ -132,13 +130,13 @@ namespace LibraryManagementSystem
         }
         static void AddBook()
         {
-            Console.WriteLine("Enter the ISBN: ");
+            Console.Write("Enter the ISBN: ");
             _ = int.TryParse(Console.ReadLine(), out int isbn);
-            Console.WriteLine("Enter the Name of the Book: ");
+            Console.Write("Enter the Name of the Book: ");
             string bookName = Console.ReadLine();
-            Console.WriteLine("Enter the Author Name: ");
+            Console.Write("Enter the Author Name: ");
             string authorName = Console.ReadLine();
-            Console.WriteLine("Enter the number of copies that you are adding: ");
+            Console.Write("Enter the number of copies that you are adding: ");
             _ = int.TryParse(Console.ReadLine(), out int copies);
 
             bool isBookAdded = _bookService.AddBook(isbn, bookName, authorName, copies);

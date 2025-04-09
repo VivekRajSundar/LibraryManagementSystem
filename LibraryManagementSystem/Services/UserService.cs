@@ -58,6 +58,10 @@ namespace LibraryManagementSystem.Services
         }
 
         public void Logout() => SessionManager.CurrentUser = null;
+        public List<User> GetAllUsers()
+        {
+            return _userRepository.GetAllUsers();            
+        }        
 
         public bool IsUserBorrowedBooks(string email)
         {
