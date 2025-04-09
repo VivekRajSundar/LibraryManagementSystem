@@ -52,15 +52,6 @@ namespace LibraryManagementSystem.Services
         public List<Book> GetAllBooks()
         {
             return _bookRepository.GetAllBooks();
-        }        
-
-        public void ListBooks()
-        {
-            List<Book> books = GetAllBooks();
-            Console.WriteLine("List of Books");
-            foreach (Book book in books) {
-                Console.WriteLine($"{book.ISBN}\t{book.Name}\t{book.Author}\t{book.CopiesAvailable}");
-            }
-        }
+        }                
     }
 }
