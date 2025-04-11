@@ -25,8 +25,8 @@ namespace LibraryManagementSystem
 
             do
             {
-                Console.WriteLine("Hi There, Before Entering into Library Please Verify yourself\n1.Register\n2.Login\n3.Exit");
-                Console.Write("Enter your choice: ");
+                //Console.WriteLine("\n1.Register\n2.Login\n3.Exit");
+                OutputHelper.ShowMenu("Hi There, Before Entering into Library Please Verify yourself", ["Register", "Login", "Exit"]);
                 int.TryParse(Console.ReadLine(), out int choice);
                 switch (choice)
                 {
@@ -35,13 +35,13 @@ namespace LibraryManagementSystem
                         break;
                     case 2:
                         if (Login()) { ViewLibrary(); }
-                        else Console.WriteLine("Authentication not successful.");
+                        else OutputHelper.ErrorMsg("Authentication not successful.");
                         break;
                     case 3:
                         Console.WriteLine("Exiting from the LibraryManagement App");
                         canContinue = false; break;
                     default:
-                        Console.WriteLine("The choice is not valid"); break;
+                        OutputHelper.ErrorMsg("The choice is not valid"); break;
                 }
             } while (canContinue);
         }
@@ -70,7 +70,7 @@ namespace LibraryManagementSystem
                     _ = int.TryParse(Console.ReadLine(), out int option);
                     if (option > 100 && SessionManager.CurrentUser.Role.ToLower() != "admin")
                     {
-                        Console.WriteLine("Invalid Choice");
+                        OutputHelper.ErrorMsg("Invalid Choice");
                         continue;
                     }
                     switch (option) //need to rewrite the enum logic for separate roles.
@@ -96,12 +96,12 @@ namespace LibraryManagementSystem
                             Logout();
                             break;
                         default:
-                            Console.WriteLine("Invalid Choice"); break;
+                            OutputHelper.ErrorMsg("Invalid Choice"); break;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message.ToString());
+                    OutputHelper.ErrorMsg(ex.Message.ToString());
                     canContinue = false;
                 }
             } while (canContinue);
@@ -117,8 +117,8 @@ namespace LibraryManagementSystem
             Console.Write("Confirm your password: ");
             string confirmPassword = Console.ReadLine();
             bool isUserAdded = _userService.Register(name, email, password, confirmPassword);
-            if (isUserAdded) Console.WriteLine("User registered successfully.");
-            else Console.WriteLine("Something went wrong, user not added"); //later change this to show exact error message.
+            if (isUserAdded) OutputHelper.SuccessMsg("User registered successfully.");
+            else OutputHelper.ErrorMsg("Something went wrong, user not added"); //later change this to show exact error message.
         }
         static bool Login()
         {
@@ -140,8 +140,8 @@ namespace LibraryManagementSystem
             _ = int.TryParse(Console.ReadLine(), out int copies);
 
             bool isBookAdded = _bookService.AddBook(isbn, bookName, authorName, copies);
-            if (isBookAdded) Console.WriteLine("Book added successfully.");
-            else Console.WriteLine("There is some issue in adding the books"); //later change this code to show exact error.
+            if (isBookAdded) OutputHelper.SuccessMsg("Book added successfully.");
+            else OutputHelper.ErrorMsg("There is some issue in adding the books"); //later change this code to show exact error.
         }
         static void BorrowBook()
         {            
@@ -152,8 +152,8 @@ namespace LibraryManagementSystem
             _ = int.TryParse(Console.ReadLine(), out int isbn);
 
             bool isBookBorrowed = _bookService.BorrowBook(isbn);
-            if (isBookBorrowed) Console.WriteLine("You borrowed the Book successfully.");
-            else Console.WriteLine("Something went wrong. Book is not borrowed.");
+            if (isBookBorrowed) OutputHelper.SuccessMsg("You borrowed the Book successfully.");
+            else OutputHelper.ErrorMsg("Something went wrong. Book is not borrowed.");
         }
         static void ReturnBook()
         {
@@ -164,8 +164,8 @@ namespace LibraryManagementSystem
             _ = int.TryParse(Console.ReadLine(), out int isbn);
 
             bool isBookReturned = _bookService.ReturnBook(isbn);
-            if (isBookReturned) Console.WriteLine("You returned the book sucessfully.");
-            else Console.WriteLine("Book Return was unsuccessful. Kindly try again.");
+            if (isBookReturned) OutputHelper.SuccessMsg("You returned the book sucessfully.");
+            else OutputHelper.ErrorMsg("Book Return was unsuccessful. Kindly try again.");
         }
         static void Logout() => _userService.Logout();
     }

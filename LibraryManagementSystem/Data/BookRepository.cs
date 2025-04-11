@@ -90,6 +90,18 @@ namespace LibraryManagementSystem.Data
             return books;
         }
 
+        public bool IsUserBorrowedBook(int isbn, string email)
+        {
+            using var connection = DbHelper.GetConnection();
+            connection.Open();
+            string query = "Select * from BorrowedBooks where Books_isbn = @isbn and User_email = @email";
+            using var command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@isbn", isbn);
+            command.Parameters.AddWithValue("@email", email);
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;           
+        }
+
         public Book? GetBook(int isbn)
         {
             using var connection = DbHelper.GetConnection();
@@ -99,11 +111,15 @@ namespace LibraryManagementSystem.Data
             command.Parameters.AddWithValue("@isbn", isbn);
             using var reader = command.ExecuteReader();
             Book? book = null;
-            while (reader.Read()) book = new Book(reader.GetInt32(1),
-                  reader.GetString(2),
-                  reader.GetString(3),
-                  reader.GetInt32(4)
+            while (reader.Read())
+            {
+                book = new Book(
+                    reader.GetInt32(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
+                    reader.GetInt32(4)
                 );
+            }
             return book;
         }
     }
