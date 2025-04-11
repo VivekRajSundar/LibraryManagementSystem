@@ -43,8 +43,7 @@ namespace LibraryManagementSystem.Services
             //Check for invalid parameters
             if (isbn < 0 || SessionManager.CurrentUser is null) return false;
 
-            Book? book = _bookRepository.GetBook(isbn);
-            if (book is null) return false;
+            if(!_bookRepository.IsUserBorrowedBook(isbn, SessionManager.CurrentUser.Email)) return false;
 
             _bookRepository.ReturnBook(isbn, SessionManager.CurrentUser.Email);
             return true;
