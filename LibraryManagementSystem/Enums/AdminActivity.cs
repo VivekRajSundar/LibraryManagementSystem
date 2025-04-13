@@ -8,7 +8,7 @@ namespace LibraryManagementSystem.Enums
 {
     public enum AdminActivity
     {
-        ViewAllUsers = 101,
+        ViewAllUsers = MemberActivity.Logout + 1,
         AddBook,
     }
 }
