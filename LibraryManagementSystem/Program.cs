@@ -25,8 +25,7 @@ namespace LibraryManagementSystem
 
             do
             {
-                //Console.WriteLine("\n1.Register\n2.Login\n3.Exit");
-                OutputHelper.ShowMenu("Hi There, Before Entering into Library Please Verify yourself", ["Register", "Login", "Exit"]);
+                OutputHelper.ShowMenu("Hi There, Before Entering into Library Please Verify yourself", ["Register", "Login", "Exit"], ConsoleColor.DarkCyan);
                 int.TryParse(Console.ReadLine(), out int choice);
                 switch (choice)
                 {
@@ -47,33 +46,31 @@ namespace LibraryManagementSystem
         }
         static void ViewLibrary()
         {
-            Console.WriteLine($"Hi {SessionManager.CurrentUser.Name}, Welcome to Library Management System!");
+            int totalEnumSize = Enum.GetNames(typeof(MemberActivity)).Length;
+            bool isAdmin = SessionManager.CurrentUser.Role.ToLower() == "admin";
+            if (isAdmin) totalEnumSize += Enum.GetNames(typeof(AdminActivity)).Length;
+            string[] messages = new string[totalEnumSize];
+            int count = 0;
+            foreach (MemberActivity activity in Enum.GetValues(typeof(MemberActivity))) messages[count++] = activity.ToString();
+            
+            if (SessionManager.CurrentUser.Role.ToLower() == "admin")
+            {
+                foreach (AdminActivity activity in Enum.GetValues(typeof(AdminActivity))) messages[count++] = activity.ToString();                
+            }
+            
             bool canContinue = true;
             do
             {
-                Console.WriteLine("Menu: ");
-                foreach (MemberActivity activity in Enum.GetValues(typeof(MemberActivity)))
-                {
-                    Console.WriteLine($"{(int)activity}. {activity}");
-                }
-                if (SessionManager.CurrentUser.Role.ToLower() == "admin")
-                {
-                    foreach (AdminActivity activity in Enum.GetValues(typeof(AdminActivity)))
-                    {
-                        Console.WriteLine($"{(int)activity}. {activity}");
-                    }
-                }
-                Console.Write($"Choose your options: ");
-
+                OutputHelper.ShowMenu($"Hi {SessionManager.CurrentUser.Name}, Welcome to Library Management System!", messages, ConsoleColor.Blue);
                 try
                 {
                     _ = int.TryParse(Console.ReadLine(), out int option);
-                    if (option > 100 && SessionManager.CurrentUser.Role.ToLower() != "admin")
+                    if (option > 100 && !isAdmin)
                     {
                         OutputHelper.ErrorMsg("Invalid Choice");
                         continue;
                     }
-                    switch (option) //need to rewrite the enum logic for separate roles.
+                    switch (option) 
                     {
                         case (int)AdminActivity.AddBook:
                             AddBook();

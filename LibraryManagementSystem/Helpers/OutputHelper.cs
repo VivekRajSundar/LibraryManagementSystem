@@ -6,7 +6,7 @@ namespace LibraryManagementSystem.Helpers
     {
         public static void ListBooks(List<Book> books)
         {
-            Console.WriteLine("List of Books");
+            BoxIt("List of Books", ConsoleColor.Cyan);
             foreach (Book book in books)
             {
                 Console.WriteLine($"{book.ISBN}\t{book.Name}\t{book.Author}\t{book.CopiesAvailable}");
@@ -15,20 +15,20 @@ namespace LibraryManagementSystem.Helpers
 
         public static void ListUsers(List<User> users) 
         {
-            Console.WriteLine("List of Users: ");
+            BoxIt("List of Users", ConsoleColor.Cyan);
             foreach (User user in users)
             {
                 Console.WriteLine($"{user.Name}\t{user.Email}\t{user.Role}");
             }
         }
 
-        public static void ShowMenu(string title, string[] options)
+        public static void ShowMenu(string title, string[] options, ConsoleColor color)
         {
-            BoxIt(title, ConsoleColor.Cyan);
+            BoxIt(title, ConsoleColor.White);
             int count = 1;
-            foreach (string option in options) ColorIt($"|{count++}. {option}", ConsoleColor.DarkCyan);
-            Line(title.Length + 10, '-', ConsoleColor.Cyan);
-            Console.ForegroundColor = ConsoleColor.Blue;
+            foreach (string option in options) ColorIt($"{count++}. {option}", ConsoleColor.Gray);
+            Line(title.Length + 10, '-', ConsoleColor.DarkGray);
+            Console.ForegroundColor = color;
             Console.Write("Enter your choice: ");
             Console.ResetColor();
         }
@@ -62,9 +62,9 @@ namespace LibraryManagementSystem.Helpers
         private static void BoxIt(string msg, ConsoleColor color)
         {
             int msgLength = msg.Length;
-            Line(msgLength + 10, '-', color);
-            ColorIt($"|{new string(' ', 4)}{msg}{new string(' ', 4)}|", color);
-            Line(msgLength + 10, '-', color);
+            Line(msgLength + 10, '-', ConsoleColor.DarkGray);
+            ColorIt($"{new string(' ', 5)}{msg}{new string(' ', 5)}", color);
+            Line(msgLength + 10, '-', ConsoleColor.DarkGray);
         }
 
         private static void Line(int count, char character = '\0', ConsoleColor color = ConsoleColor.White)
