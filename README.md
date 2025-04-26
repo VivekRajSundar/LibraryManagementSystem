@@ -1,6 +1,9 @@
 # LibraryManagementSystem
-A simple console based Library Management System to add, view and borrow books from the library.
-This Project is to test my knowledge in .net 8, learning new stuffs and also practicing the workflow in git & github.
+A simple console based Library Management System developed in C#, .Net 8 and SQLite as Database.
 
-TODO:
-1. Need to organise console outputs
+Functionalities:
+* Register
+* Login
+* Add a Book
+* Borrow a book
+* Return a book
