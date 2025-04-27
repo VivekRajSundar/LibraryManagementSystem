@@ -1,25 +1,33 @@
 ﻿using LibraryManagementSystem.Models;
+using Spectre.Console;
 
 namespace LibraryManagementSystem.Helpers
 {
     public class OutputHelper
     {
         public static void ListBooks(List<Book> books)
-        {
-            BoxIt("List of Books", ConsoleColor.Cyan);
-            foreach (Book book in books)
-            {
-                Console.WriteLine($"{book.ISBN}\t{book.Name}\t{book.Author}\t{book.CopiesAvailable}");
+        {            
+            var table = new Table();
+            table.Title("[skyblue1]List of Books[/]");
+            //Add columns
+            table.AddColumns(["ISBN", "Book", "Author", "Available Copies"]);            
+
+            foreach (Book book in books) {
+                table.AddRow($"{book.ISBN}", book.Name, book.Author, $"{book.CopiesAvailable}");
             }
+            AnsiConsole.Write(table);
         }
 
         public static void ListUsers(List<User> users) 
         {
-            BoxIt("List of Users", ConsoleColor.Cyan);
+            var table = new Table();
+            table.Title("[green]List of Users[/]");
+            table.AddColumns(["Name", "Email", "Role"]);
             foreach (User user in users)
             {
-                Console.WriteLine($"{user.Name}\t{user.Email}\t{user.Role}");
+                table.AddRow(user.Name,user.Email,user.Role);
             }
+            AnsiConsole.Write(table);
         }
 
         public static void ShowMenu(string title, string[] options, ConsoleColor color)

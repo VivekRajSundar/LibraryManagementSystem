@@ -3,6 +3,7 @@ using LibraryManagementSystem.Enums;
 using LibraryManagementSystem.Helpers;
 using LibraryManagementSystem.Services;
 using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 using System.Xml.Linq;
 
 namespace LibraryManagementSystem
@@ -22,22 +23,30 @@ namespace LibraryManagementSystem
             string connectionString = config.GetConnectionString("LibraryDb");
             DbHelper.InitializeDB(connectionString);
             bool isAuthenticated = false, canContinue = true;
+            var entryRule = new Rule("App Start");
+            entryRule.Style = Style.Parse("red");
+            AnsiConsole.Write(entryRule);
 
+            var exitrule = new Rule("Exiting from the LibraryManagement App");
+            exitrule.Style = Style.Parse("red");
             do
-            {
-                OutputHelper.ShowMenu("Hi There, Before Entering into Library Please Verify yourself", ["Register", "Login", "Exit"], ConsoleColor.DarkCyan);
-                int.TryParse(Console.ReadLine(), out int choice);
+            {                
+                string choice = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .Title("Choose a option to continue")
+                            .AddChoices(["Login", "Register", "Exit"])
+                            );
                 switch (choice)
                 {
-                    case 1:
+                    case "Register":
                         Register();
                         break;
-                    case 2:
+                    case "Login":
                         if (Login()) { ViewLibrary(); }
                         else OutputHelper.ErrorMsg("Authentication not successful.");
                         break;
-                    case 3:
-                        Console.WriteLine("Exiting from the LibraryManagement App");
+                    case "Exit":
+                        AnsiConsole.Write(exitrule);
                         canContinue = false; break;
                     default:
                         OutputHelper.ErrorMsg("The choice is not valid"); break;
@@ -59,17 +68,26 @@ namespace LibraryManagementSystem
             }
             
             bool canContinue = true;
+            var loginRule = new Rule($"Hello [darkolivegreen2]{SessionManager.CurrentUser.Name}[/], WelCome to [orangered1]Library[/]");
+            loginRule.Style = Style.Parse("tan");
+            AnsiConsole.Write(loginRule);
+
+            var logoutRule = new Rule($"See you next time, [darkolivegreen2]{SessionManager.CurrentUser.Name}[/]!");
+            logoutRule.Style = Style.Parse("tan");            
             do
             {
-                OutputHelper.ShowMenu($"Hi {SessionManager.CurrentUser.Name}, Welcome to Library Management System!", messages, ConsoleColor.Blue);
                 try
                 {
-                    _ = int.TryParse(Console.ReadLine(), out int option);
-                    if (option > 100 && !isAdmin)
-                    {
-                        OutputHelper.ErrorMsg("Invalid Choice");
-                        continue;
-                    }
+                    var choice = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                            .Title("Select what you wanna do")
+                            .AddChoices(messages)
+                        );
+
+                    int option = -1;
+                    if(Enum.TryParse<MemberActivity>(choice, out var result))  option = (int)result;
+                    else if(Enum.TryParse<AdminActivity>(choice,out var result1))  option = (int)result1;
+                                        
                     switch (option) 
                     {
                         case (int)AdminActivity.AddBook:
@@ -88,7 +106,7 @@ namespace LibraryManagementSystem
                             ReturnBook();
                             break;
                         case (int)MemberActivity.Logout:
-                            Console.WriteLine($"See you next time, {SessionManager.CurrentUser.Name}!");
+                            AnsiConsole.Write(logoutRule);
                             canContinue = false;
                             Logout();
                             break;
@@ -105,24 +123,19 @@ namespace LibraryManagementSystem
         }
         static void Register()
         {
-            Console.Write("Enter your Name: ");
-            string name = Console.ReadLine();
-            Console.Write("Enter your Email: ");
-            string email = Console.ReadLine();
-            Console.Write("Enter your password: ");
-            string password = Console.ReadLine();
-            Console.Write("Confirm your password: ");
-            string confirmPassword = Console.ReadLine();
+            string name = AnsiConsole.Ask<string>("What's your name?");
+            string email = AnsiConsole.Ask<string>("What's your email?");
+            string password = AnsiConsole.Ask<string>("Enter your password:");
+            string confirmPassword = AnsiConsole.Ask<string>("Confirm your password:");
+
             bool isUserAdded = _userService.Register(name, email, password, confirmPassword);
             if (isUserAdded) OutputHelper.SuccessMsg("User registered successfully.");
             else OutputHelper.ErrorMsg("Something went wrong, user not added"); //later change this to show exact error message.
         }
         static bool Login()
-        {
-            Console.Write("Enter you email: ");
-            string email = Console.ReadLine();
-            Console.Write("Enter your password: ");
-            string password = Console.ReadLine();
+        {            
+            string email = AnsiConsole.Ask<string>("What's your email?");
+            string password = AnsiConsole.Prompt(new TextPrompt<string>("Enter your password: ").Secret());
             return _userService.Login(email, password);
         }
         static void AddBook()
