@@ -17,19 +17,28 @@ A simple console-based Library Management System developed in C#, .NET 8, utiliz
   </a> 
 </p>
 
-📂 Folder Structure
+## 📂 Folder Structure
 LibraryManagementSystem/
-│
-├── LibraryManagementSystem/       # Main application code
-│   ├── Program.cs                 # Entry point of the application
-│   ├── Models/                    # Data models (e.g., Book, User)
-│   ├── Services/                  # Business logic and services
-│   └── Data/                      # Database context and operations
-│
-├── LibraryManagementSystem.sln    # Solution file
-├── .gitignore                     # Git ignore file
-└── README.md                      # Project documentation
-
+├── LibraryManagementSystem.sln # Solution file
+├── Program.cs # Entry point of the application
+├── Models/ # Entity classes (e.g., Book, User)
+│ ├── Book.cs
+│ ├── User.cs
+│ └── BorrowRecord.cs
+├── Data/ # Database context and seed data
+│ └── LibraryContext.cs
+├── Services/ # Core business logic and services
+│ ├── BookService.cs
+│ ├── UserService.cs
+│ └── BorrowService.cs
+├── Repositories/ # Data access layer
+│ ├── BookRepository.cs
+│ ├── UserRepository.cs
+│ └── BorrowRepository.cs
+├── Migrations/ # EF Core migrations (auto-generated)
+│ └── [timestamp]_InitialCreate.cs
+├── appsettings.json # Configuration file
+└── README.md # Project documentation
 
 🚀 Features
 * User Registration & Login: Secure user authentication system.
