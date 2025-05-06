@@ -40,7 +40,7 @@ LibraryManagementSystem/
 ├── appsettings.json # Configuration file
 └── README.md # Project documentation
 
-🚀 Features
+## 🚀 Features
 * User Registration & Login: Secure user authentication system.
 * Book Management: Add, view, and manage books in the library.
 * Borrow & Return Books: Users can borrow available books and return them.
