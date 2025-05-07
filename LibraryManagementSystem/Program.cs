@@ -53,6 +53,10 @@ namespace LibraryManagementSystem
                 }
             } while (canContinue);
         }
+
+        /// <summary>
+        /// The Library Menu.
+        /// </summary>
         static void ViewLibrary()
         {
             int totalEnumSize = Enum.GetNames(typeof(MemberActivity)).Length;
@@ -140,14 +144,10 @@ namespace LibraryManagementSystem
         }
         static void AddBook()
         {
-            Console.Write("Enter the ISBN: ");
-            _ = int.TryParse(Console.ReadLine(), out int isbn);
-            Console.Write("Enter the Name of the Book: ");
-            string bookName = Console.ReadLine();
-            Console.Write("Enter the Author Name: ");
-            string authorName = Console.ReadLine();
-            Console.Write("Enter the number of copies that you are adding: ");
-            _ = int.TryParse(Console.ReadLine(), out int copies);
+            int isbn = AnsiConsole.Ask<int>("Enter the ISBN: ");            
+            string bookName = AnsiConsole.Ask<string>("Enter the Name of the Book: ");                                    
+            string authorName = AnsiConsole.Ask<string>("Enter the Author Name: ");
+            int copies = AnsiConsole.Ask<int>("Enter the number of copies that you are adding: ");            
 
             bool isBookAdded = _bookService.AddBook(isbn, bookName, authorName, copies);
             if (isBookAdded) OutputHelper.SuccessMsg("Book added successfully.");
@@ -157,9 +157,8 @@ namespace LibraryManagementSystem
         {            
             //Check if the user currently borrowed a book or not
             if (_userService.IsUserBorrowedBooks(SessionManager.CurrentUser.Email)) { Console.WriteLine("You already borrowed a book."); return; }
-
-            Console.Write("Enter the ISBN number of the Book: ");
-            _ = int.TryParse(Console.ReadLine(), out int isbn);
+            
+            int isbn = AnsiConsole.Ask<int>("Enter the ISBN number of the Book: ");
 
             bool isBookBorrowed = _bookService.BorrowBook(isbn);
             if (isBookBorrowed) OutputHelper.SuccessMsg("You borrowed the Book successfully.");
@@ -170,8 +169,7 @@ namespace LibraryManagementSystem
             //check if the user borrowed any books
             if (!_userService.IsUserBorrowedBooks(SessionManager.CurrentUser.Email)) { Console.WriteLine("You don't borrowed any books that you can return"); return; }
 
-            Console.Write("Enter the ISBN number of the Book that you want to return: ");
-            _ = int.TryParse(Console.ReadLine(), out int isbn);
+            int isbn = AnsiConsole.Ask<int>("Enter the ISBN number of the Book that you want to return: ");
 
             bool isBookReturned = _bookService.ReturnBook(isbn);
             if (isBookReturned) OutputHelper.SuccessMsg("You returned the book sucessfully.");
