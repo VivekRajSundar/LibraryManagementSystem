@@ -42,8 +42,7 @@ namespace LibraryManagementSystem
                         Register();
                         break;
                     case "Login":
-                        if (Login()) { ViewLibrary(); }
-                        else OutputHelper.ErrorMsg("Authentication not successful.");
+                        Login();
                         break;
                     case "Exit":
                         AnsiConsole.Write(exitrule);
@@ -132,15 +131,17 @@ namespace LibraryManagementSystem
             string password = AnsiConsole.Ask<string>("Enter your password:");
             string confirmPassword = AnsiConsole.Ask<string>("Confirm your password:");
 
-            bool isUserAdded = _userService.Register(name, email, password, confirmPassword);
-            if (isUserAdded) OutputHelper.SuccessMsg("User registered successfully.");
-            else OutputHelper.ErrorMsg("Something went wrong, user not added"); //later change this to show exact error message.
+            var result = _userService.Register(name, email, password, confirmPassword);
+            if (result.isUserAdded) OutputHelper.SuccessMsg(result.message);
+            else OutputHelper.ErrorMsg(result.message); 
         }
-        static bool Login()
+        static void Login()
         {            
             string email = AnsiConsole.Ask<string>("What's your email?");
             string password = AnsiConsole.Prompt(new TextPrompt<string>("Enter your password: ").Secret());
-            return _userService.Login(email, password);
+            var result = _userService.Login(email, password);
+            if(result.isAuthenticated) ViewLibrary();
+            else OutputHelper.ErrorMsg(result.message);
         }
         static void AddBook()
         {
@@ -149,9 +150,9 @@ namespace LibraryManagementSystem
             string authorName = AnsiConsole.Ask<string>("Enter the Author Name: ");
             int copies = AnsiConsole.Ask<int>("Enter the number of copies that you are adding: ");            
 
-            bool isBookAdded = _bookService.AddBook(isbn, bookName, authorName, copies);
-            if (isBookAdded) OutputHelper.SuccessMsg("Book added successfully.");
-            else OutputHelper.ErrorMsg("There is some issue in adding the books"); //later change this code to show exact error.
+            var result = _bookService.AddBook(isbn, bookName, authorName, copies);
+            if (result.isBookAdded) OutputHelper.SuccessMsg(result.message);
+            else OutputHelper.ErrorMsg(result.message); //later change this code to show exact error.
         }
         static void BorrowBook()
         {            
