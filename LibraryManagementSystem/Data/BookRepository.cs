@@ -5,17 +5,24 @@ namespace LibraryManagementSystem.Data
 {
     public class BookRepository
     {
-        public void AddBook(Book book)
+        public bool AddBook(Book book)
         {
-            using var connection = DbHelper.GetConnection();
-            connection.Open();
-            string query = "INSERT INTO Books(ISBN, Name, Author, CopiesAvailable) VALUES(@ISBN, @Name, @Author, @CopiesAvailable)";
-            using var command = new SQLiteCommand(query, connection);
-            command.Parameters.AddWithValue("@ISBN", book.ISBN);
-            command.Parameters.AddWithValue("@Name", book.Name);
-            command.Parameters.AddWithValue("@Author", book.Author);
-            command.Parameters.AddWithValue("@CopiesAvailable", book.CopiesAvailable);
-            command.ExecuteNonQuery();
+            try
+            {
+                using var connection = DbHelper.GetConnection();
+                connection.Open();
+                string query = "INSERT INTO Books(ISBN, Name, Author, CopiesAvailable) VALUES(@ISBN, @Name, @Author, @CopiesAvailable)";
+                using var command = new SQLiteCommand(query, connection);
+                command.Parameters.AddWithValue("@ISBN", book.ISBN);
+                command.Parameters.AddWithValue("@Name", book.Name);
+                command.Parameters.AddWithValue("@Author", book.Author);
+                command.Parameters.AddWithValue("@CopiesAvailable", book.CopiesAvailable);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex) {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>        

@@ -13,19 +13,20 @@ namespace LibraryManagementSystem.Services
         {
             _userRepository = new UserRepository();
         }
-        public bool Register(string name, string email, string password, string confirmPassword)
+        public (bool isUserAdded,string message) Register(string name, string email, string password, string confirmPassword)
         {
             //check if no fields are empty
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword)) return false;
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword)) 
+                return (false, "One or more fields are empty");
 
             //check if it is a valid email
-            if (!IsValidEmail(email)) return false;
+            if (!IsValidEmail(email)) return (false, "The Email format is wrong");
 
             //check if email already exists in db
-            if (_userRepository.GetUser(email.ToLower()) is not null) return false;
+            if (_userRepository.GetUser(email.ToLower()) is not null) return (false, "The user is already registered.");
 
             //check if both passwords are same
-            if (!string.Equals(password, confirmPassword, StringComparison.Ordinal)) return false;
+            if (!string.Equals(password, confirmPassword, StringComparison.Ordinal)) return (false, "Both passwords are not same.");
 
             //Generate Salt for this user
             string salt = GenerateSalt();
@@ -34,27 +35,33 @@ namespace LibraryManagementSystem.Services
             string hashedPassword = HashPassword(password, salt);
 
             //Call repository method to add user in db
-            return _userRepository.AddUser(new User(name, email.ToLower(), hashedPassword, salt));
+            bool isUserAdded = _userRepository.AddUser(new User(name, email.ToLower(), hashedPassword, salt));
+            if (isUserAdded) return (true, "User Registered Successsfully.");
+            return (false, "Something went wrong.");
         }
 
-        public bool Login(string email, string password)
+        public (bool isAuthenticated,string message) Login(string email, string password)
         {
             // check if email and password is valid or not
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password)) return false;
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password)) return (false, "Either Email or Password is empty");
 
             //Check if it is a valid email
-            if(!IsValidEmail(email)) return false;
+            if(!IsValidEmail(email)) return (false, "The given email is invalid.");
 
             // call repository method to verify the login
             User? user = _userRepository.GetUser(email.ToLower());
-            if (user is null) return false;
+            if (user is null) return (false, "The email is not registered.");
 
             //Verify the password
             string hashedPassword = HashPassword(password, user.Salt);
 
-            if (user.Password == hashedPassword) SessionManager.CurrentUser = user;
+            if (user.Password == hashedPassword)
+            {
+                SessionManager.CurrentUser = user;
+                return (true, "Authentication successfull.");
+            }
 
-            return user.Password == hashedPassword;
+            return (false, "The password is not matching.");
         }
 
         public void Logout() => SessionManager.CurrentUser = null;
@@ -68,6 +75,7 @@ namespace LibraryManagementSystem.Services
             return _userRepository.IsUserBorrowedBook(email);
         }
 
+        #region Private methods
         private static bool IsValidEmail(string email)
         {
             string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
@@ -88,5 +96,6 @@ namespace LibraryManagementSystem.Services
             byte[] hash = sha256.ComputeHash(saltedPassword);
             return Convert.ToBase64String(hash);
         }
+        #endregion
     }
 }
